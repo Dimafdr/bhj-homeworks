@@ -4,6 +4,7 @@ class Game {
     this.wordElement = container.querySelector('.word');
     this.winsElement = container.querySelector('.status__wins');
     this.lossElement = container.querySelector('.status__loss');
+    this.timer = container.querySelector('.timer');
 
     this.reset();
 
@@ -17,23 +18,24 @@ class Game {
   }
 
   registerEvents() {
-    /*
-      TODO:
-      Написать обработчик события, который откликается
-      на каждый введённый символ.
-      В случае правильного ввода слова вызываем this.success()
-      При неправильном вводе символа - this.fail();
-      DOM-элемент текущего символа находится в свойстве this.currentSymbol.
-     */
+    document.addEventListener('keypress', event => {
+      if (this.currentSymbol.textContent.toLowerCase() === event.key.toLowerCase())
+        this.success();
+      else
+        this.fail();
+    })
+  }
+
+  countTimer = () => {
+    this.timer.textContent--; 
+    if (this.timer.textContent == 0)
+      this.fail();
   }
 
   success() {
-    if(this.currentSymbol.classList.contains("symbol_current")) this.currentSymbol.classList.remove("symbol_current");
     this.currentSymbol.classList.add('symbol_correct');
     this.currentSymbol = this.currentSymbol.nextElementSibling;
-
     if (this.currentSymbol !== null) {
-      this.currentSymbol.classList.add('symbol_current');
       return;
     }
 
@@ -56,6 +58,11 @@ class Game {
     const word = this.getWord();
 
     this.renderWord(word);
+    
+    this.timer.textContent = word.length;
+    if (this.timerID)
+      clearInterval(this.timerID);
+    this.timerID = setInterval(this.countTimer, 1000);    
   }
 
   getWord() {
@@ -70,7 +77,9 @@ class Game {
         'popcorn',
         'cinema',
         'love',
-        'javascript'
+        'javascript',
+        'я люблю kitkat',
+        'КрокодиLL'
       ],
       index = Math.floor(Math.random() * words.length);
 
@@ -91,4 +100,3 @@ class Game {
 }
 
 new Game(document.getElementById('game'))
-
